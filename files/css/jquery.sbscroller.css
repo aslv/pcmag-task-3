@@ -1,0 +1,9 @@
+.scroll-content {position:absolute;top:0;left:0;padding:0px}
+.scroll-pane{position:relative;}
+.slider-wrap{position:absolute;right:0;top:0;width:0.4em;background: rgba(255,255,255,0.1);border-radius:4px}
+.slider-vertical{position:relative;height:100%;background:none !important;border:none !important}
+.ui-slider-handle{background-color:darkgray;height:10px;width:.3em !important;margin:0 auto;margin-left:.2em !important;display:block;position:absolute;background-position:left top !important;}
+.ui-slider-handle img{border:none}
+.scrollbar-top{position:absolute;top:0;}
+.scrollbar-bottom{position:absolute;bottom:0;}
+.scrollbar-grip{position:absolute;top:50%;}
