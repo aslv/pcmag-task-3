@@ -58,7 +58,7 @@ function Map(settings) {
             var radiusByX;
             var radiusByY;
             
-            if (edgeDistanceX < settings.offsetNavigation) {
+            if (edgeDistanceX < edgeDistanceY && edgeDistanceX < settings.offsetNavigation) {
                 flagX = true;
                 circleX = -edgeDistanceX - 2.5 * settings.offsetNavigation;
                 radiusByX = 2 * ((settings.offsetNavigation - edgeDistanceX) + settings.offsetNavigation);
@@ -69,7 +69,7 @@ function Map(settings) {
                     circleX = settings.dimensions - circleX;
                 }
             }
-            if (edgeDistanceY < settings.offsetNavigation) {
+            if (edgeDistanceY < edgeDistanceX &&  edgeDistanceY < settings.offsetNavigation) {
                 flagY = true;
                 circleY = -edgeDistanceY - 2.5 * settings.offsetNavigation;
                 radiusByY = 2 * ((settings.offsetNavigation - edgeDistanceY) + settings.offsetNavigation);
