@@ -149,6 +149,7 @@ function Market() {
             incremental: false,
             min: 0,
             spin: function(e, ui) {
+                $(document).trigger('quantityChange.app', [ui.value]);
                 return updateGoldLabel(ui.value);
             }
     });
