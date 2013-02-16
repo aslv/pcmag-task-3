@@ -30,7 +30,7 @@ function Unit(options) {
     }
     function getProperOpacity(value) {
         // TODO return more random number :D
-        return value / 200; 
+        return (parseInt(value)) ? Math.log(value, 1000) : 0.1; 
     }
     function handlerQuantityChange (e, value) {
         if (settings.increaseRange) {
