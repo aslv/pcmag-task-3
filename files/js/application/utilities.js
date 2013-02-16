@@ -57,6 +57,19 @@ window.Utilities = (function() {
             }
             return result;
         };
+        
+        /**
+         * Return rgba value
+         * @param {Object} color
+         * @param {Number} opacity
+         * @returns {String}
+         */
+        this.buildRgbaColor = function(color, opacity) {
+            if (typeof opacity === 'undefined') {
+                opacity = (color.hasOwnProperty('a')) ? color.a : 0;
+            }
+            return 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + opacity +')';
+        };
     }
     return new Utilities;
 }());
