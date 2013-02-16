@@ -75,4 +75,10 @@ window.Utilities = (function() {
 }());
 String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
-}
+};
+Math.log = (function() {
+  var log = Math.log;
+  return function(n, base) {
+    return log(n)/(base ? log(base) : 1);
+  };
+}());
