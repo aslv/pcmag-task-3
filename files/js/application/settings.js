@@ -15,6 +15,7 @@ CONST = {
         range: 1.5,
         min: 1,
         images: ['unitPig1', 'unitPig2', 'unitPig3', 'unitPig4', 'unitPig5', 'unitPig6', 'unitPig7', 'unitPig8', 'unitPig9'],
+        color: {r: 0, g: 222, b: 0},
         attackPoints: function(n) {
             return 4 * n;
         }
@@ -24,7 +25,7 @@ CONST = {
         range: 2,
         min: 1,
         images: ['unitChicken1', 'unitChicken2', 'unitChicken3', 'unitChicken4', 'unitChicken5'],
-        images: ['unitChicken1'],
+        color: {r: 238, g: 255, b: 0},
         attackPoints: function(n) {
             return 2 * n - 1;
         }
@@ -35,6 +36,7 @@ CONST = {
         min: 1,
         max: 1,
         images: ['unitMine1'],
+        color: {r: 221, g: 255, b: 255},
         attackPoints: 0
     }, {
         type: 'bomb',
@@ -45,6 +47,7 @@ CONST = {
         min: 1,
         max: 1,
         images: ['unitBomb1', 'unitBomb2'],
+        color: {r: 221, g: 0, b: 0},
         attackPoints: 0
     }],
     images: {
