@@ -86,6 +86,11 @@ function Market() {
         }
         return properties;
     }
+    
+    // Privileged methods
+    this.getQuantity = function() {
+        return $quantityLabel.val();
+    };
 
     // Constructor
     $goldLabel.val(app.core.getGold());
