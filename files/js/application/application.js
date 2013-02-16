@@ -88,20 +88,18 @@ function Core() {
             return position.x === x && position.y === y;
         });
     };
-
+    this.createNewUnit = function(type, settings) {
+        return new Unit($.extend(settings, 
+            context.getUnitProperties(type)
+        ));
+    };
     this.setNewUnit = function(type, x, y, quantity) {
         var quantity = (typeof quantity === 'undefined') ? 1 : quantity;
-        var unitProperties = context.getUnitProperties(type);
-        var newUnit = new Unit({
+        var newUnit = context.createNewUnit(type, {
             x: x,
             y: y,
-            type: type,
             quantity: quantity,
-            price: unitProperties.price,
-            range: unitProperties.range,
-            increaseRangePrice: unitProperties.increaseRangePrice,
-            increaseRange: unitProperties.increaseRange,
-            attackPoints: unitProperties.attackPoints
+            dimensions: _map.getCellDimensions()
         });
         var errors = [];
 
