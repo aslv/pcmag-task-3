@@ -47,7 +47,7 @@ CONST = {
         min: 1,
         max: 1,
         images: ['unitBomb1', 'unitBomb2'],
-        color: {r: 221, g: 0, b: 0},
+        color: {r: 221, g: 0, b: 0, a: 0.1},
         attackPoints: 0
     }],
     images: {
