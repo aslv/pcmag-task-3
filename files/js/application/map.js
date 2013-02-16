@@ -84,6 +84,7 @@ function Map(settings) {
                 shape.parent.draw();
             }
         } else {
+            shape.hide();
             settings.navigationGradientEnabled = true;
         }
     }
