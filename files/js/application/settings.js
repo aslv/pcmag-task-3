@@ -51,7 +51,7 @@ CONST = {
         attackPoints: 0
     }],
     images: {
-        background: 'files/img/game/battlefield/background.jpg',
+        background: 'files/img/game/battlefield/grass.png',
         gold: 'files/img/game/icons/gold.png',
         iconMine: 'files/img/game/icons/mine.png',
         iconChicken: 'files/img/game/icons/chicken.png',
