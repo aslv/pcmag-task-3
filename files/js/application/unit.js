@@ -29,7 +29,6 @@ function Unit(options) {
         return image;
     }
     function getProperOpacity(value) {
-        // TODO return more random number :D
         return (parseInt(value)) ? Math.log(value, 1000) : 0.1; 
     }
     function handlerQuantityChange (e, value) {
@@ -70,14 +69,22 @@ function Unit(options) {
     this.getArea = function() {
         return _graphicalArea;
     };
+    this.getLayer = function() {
+        return settings.layer;
+    };
     this.setQuantity = function(newQuantity) {
         settings.quantity = newQuantity;
         _attackPoints = newQuantity * 1;
         return context;
     };
     this.setPosition = function(x, y) {
+        _graphicalArea.setPosition(x, y);
+        _graphicalUnit.setPosition(x - settings.dimensions / 2, y - settings.dimensions / 2);
         settings.x = x;
         settings.y = y;
+        // TODO rewrite this
+//        settings.gridX = x;
+//        settings.gridY = y;
         return context;
     };
     this.setGridPosition = function(x, y) {
@@ -121,6 +128,7 @@ function Unit(options) {
         return context;
     };
     this.appendToLayer = function(layer) {
+        settings.layer = layer;
         layer.add(_graphicalArea)
             .add(_graphicalUnit);
         return context;
