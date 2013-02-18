@@ -28,6 +28,12 @@ function Unit(options) {
         image.src = CONST.images[randomImage];
         return image;
     }
+    function positionToGrid(position) {
+        return Math.round((position - settings.offset) / settings.dimensions);
+    }
+    function positionFromGrid() {
+        
+    }
     function getProperOpacity(value) {
         return (parseInt(value)) ? Math.log(value, 1000) : 0.1; 
     }
@@ -123,7 +129,7 @@ function Unit(options) {
         _graphicalUnit.hide();
         return context;
     };
-    this.hideRange = function() {
+    this.hideArea = function() {
         _graphicalArea.hide();
         return context;
     };
@@ -140,6 +146,9 @@ function Unit(options) {
     this.disableChangeable = function() {
         settings.changeable = false;
         $(document).off('quantityChange.app');
+    };
+    this.place = function() {
+        console.log(settings.x)
     };
     this.destroy = function() {
         _graphicalUnit.remove();
@@ -166,9 +175,9 @@ function Unit(options) {
     });
     _graphicalArea = new Kinetic.Circle({
         visible: false,
-        strokeWidth: 2,
-        radius: settings.range * settings.dimensions,
-        stroke: 'black'
+        radius: settings.range * settings.dimensions,  
+        stroke: Utilities.buildRgbaColor(settings.color, 1),
+        strokeWidth: 1
     });
     
     if (!settings.increaseRange) {

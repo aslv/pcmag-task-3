@@ -10,6 +10,7 @@ function Map(settings) {
     var _layerMap = new Kinetic.Layer();
     var _layerOverlay = new Kinetic.Layer();
     
+    var _navigationGradient;
     var _unitToAdd = null;
     var _unitToAddType = null;
     var _cellDimensions = (settings.dimensions - 2 * settings.offset) / settings.size;
@@ -18,10 +19,9 @@ function Map(settings) {
     // Private methods
     /**
      * Create background of screen
-     * @param {object} layer
-     * @returns {null}
+     * @returns {Object}
      */
-    function buildBackground(layer) {
+    function buildBackground() {
         // Background image
         var image = new Image();
         image.src = settings.images.background;
@@ -34,7 +34,42 @@ function Map(settings) {
             fillPatternOffset: [0, 0],
             fillPatternImage: image
         });
-        layer.add(background);
+        return background;
+    }
+    function correctMouseleaveCoordinates(x, y, dimensions) {
+        var leftEdge = (dimensions / 2 > x);
+        var topEdge = (dimensions / 2 > y);
+        var coords = {
+            x: x,
+            y: y
+        };
+        
+        if (leftEdge && topEdge) {
+            if (coords.x < coords.y) {
+                coords.x = 0;
+            } else {
+                coords.y = 0;
+            }
+        } else if (leftEdge) {
+            if (coords.x < dimensions - coords.y) {
+                coords.x = 0;
+            } else {
+                coords.y = dimensions;
+            }
+        } else if (topEdge) {
+            if (dimensions - coords.x < coords.y) {
+                coords.x = dimensions;
+            } else {
+                coords.y = 0;
+            }
+        } else {
+            if (coords.x > coords.y) {
+                coords.x = dimensions;
+            } else {
+                coords.y = dimensions;
+            }
+        }
+        return coords;
     }
     function updateNavigationGradientSize(shape, offsetX, offsetY) {
         var flagX = false;
@@ -81,112 +116,75 @@ function Map(settings) {
                     fillRadialGradientEndRadius: radius,
                     visible: true
                 });
-                shape.parent.draw();
             }
         } else {
             shape.hide();
             settings.navigationGradientEnabled = true;
         }
+        shape.parent.draw();
     }
-    function buildOverlay(layer) {
-        var circle = new Kinetic.Circle({
-            fillRadialGradientStartRadius: 0,
-            fillRadialGradientStartPoint: [0, 0],
-            fillRadialGradientEndPoint: [0, 0],
-            fillRadialGradientColorStops: [0.6, 'black', 1, 'transparent'],
-            fillRadialGradientEndRadius: 1
-        }); 
-        layer.add(circle);
-        
-        layer.on('mousemove.navigationGradient', function(e) {
-            updateNavigationGradientSize(circle, e.offsetX, e.offsetY);
-        });
-        layer.on('mouseleave.navigationGradient', function(e) {
-            var leftEdge = (_halfDimensions > e.offsetX);
-            var topEdge = (_halfDimensions > e.offsetY);
-            var x = e.offsetX;
-            var y = e.offsetY;
-            if (leftEdge && topEdge) {
-                if(x < y) {
-                    x = 0;
-                } else {
-                    y = 0;
-                }
-            } else if(leftEdge){
-                if(x < settings.dimensions - y) {
-                    x = 0;
-                } else {
-                    y = settings.dimensions;
-                }
-            } else if(topEdge) {                
-                if(settings.dimensions - x < y) {
-                    x = settings.dimensions;
-                } else {
-                    y = 0;
-                }
-            } else {
-                if(x > y) {
-                    x = settings.dimensions;
-                } else {
-                    y = settings.dimensions;
-                }
-            }
-
-            updateNavigationGradientSize(circle, x, y);
-                    
-            $(document).on('click.navigationGradient', function(event) {
-                circle.hide();
-                layer.draw();
-                settings.navigationGradientEnabled = false;
-                $(document).off('click.navigationGradient')
-            });
-        });
-    }
-
-    function handlerMapMousemoveUnitPlacing(e) {
+    function handlerUnitPlacingMousemoveBattlefield(e) {
         _unitToAdd.setAttrs({
             x: e.offsetX - _cellDimensions / 2,
             y: e.offsetY - _cellDimensions / 2,
             visible: true
         });
+        _navigationGradient.moveToTop();
         _layerMap.draw();
     }
-    function handlerMapMouseleaveUnitPlacing(e) {
-        _unitToAdd.hide();
+    function handlerUnitPlacingMouseenterBattlefield(e) {
+        $(document).off('click.unitPlacing');
+        
+    }
+    function handlerUnitPlacingMouseleaveBattlefield(e) {
+        // Known issue - if you click and strart dragging around the event is being triggered
+        var coords = correctMouseleaveCoordinates(e.offsetX, e.offsetY, settings.dimensions);
+        _unitToAdd.setPosition(coords.x, coords.y);
+        
+        $(document).on('click.unitPlacing', function(event) {
+            $(document).off('click.unitPlacing');
+            _unitToAdd
+                .hide()
+                .getLayer()
+                .draw();
+        });
         _layerMap.draw();
     }
-//    function getGriddedMapPosition(position) {
-//        return Math.round((position - settings.offset) / _cellDimensions);
+    function handlerUnitPlacingClickBattlefield() {
+        //    this.getGriddedMapPosition(position) {
 //    }
-//    layer.on('click.buildUnit', function(e) {
 //        var mapX = getGriddedMapPosition(e.offsetX);
 //        var mapY = getGriddedMapPosition(e.offsetY);
 //        console.log(mapX, mapY)
 ////            unit.setAbsolutePosition(mapX * _cellDimensions, mapY * _cellDimensions);
-//        _range.remove();
-//        layer.off('mousemove.buildUnit click.buildUnit');
+        _unitToAdd
+            .hideArea()
+            .place();
+        _layerMap.off('.unitPlacing');
 //        layer.draw();
 //    });
+    }
+    function handlerNavigationGradientMousemoveBattlefield(e) {
+        updateNavigationGradientSize(_navigationGradient, e.offsetX, e.offsetY);
+    }
+    function handlerNavigationGradientMouseenterBattlefield(e) {
+        $(document).off('click.navigationGradient');
+    }
+    function handlerNavigationGradientMouseleaveBattlefield(e) {
+        var coords = correctMouseleaveCoordinates(e.offsetX, e.offsetY, settings.dimensions);
 
-    // Privileged methods
-    this.getSettings = function() {
-        return settings;
-    };
-    this.getStage = function() {
-        return _stage;
-    };
-    this.getMap = function() {
-        return _layerMap;
-    };
-    this.getCellDimensions= function() {
-        return _cellDimensions;
-    };
+        updateNavigationGradientSize(_navigationGradient, coords.x, coords.y);
 
-    // Constructor
-    settings.navigationGradientEnabled = false;
-    
-    // On unit change
-    $(document).bind('unitChange.app', function (e, type) {
+        $(document).on('click.navigationGradient', function(event) {
+            $(document).off('click.navigationGradient');
+            _navigationGradient
+                .hide();
+            _navigationGradient.parent
+                .draw();
+            settings.navigationGradientEnabled = false;
+        });
+    }
+    function handlerAppUnitChange(e, type) {
         // If there is selected type
         if (type) {
             var flag = false;
@@ -206,9 +204,11 @@ function Map(settings) {
                     layer: _layerMap
                 });
                 _unitToAdd.show();
-                
-                _layerMap.on('mousemove.unitPlacing', handlerMapMousemoveUnitPlacing);
-                _layerMap.on('mouseleave.unitPlacing', handlerMapMouseleaveUnitPlacing);
+                                
+                _layerMap.on('mousemove.unitPlacing', handlerUnitPlacingMousemoveBattlefield);
+                _layerMap.on('mouseenter.unitPlacing', handlerUnitPlacingMouseenterBattlefield);
+                _layerMap.on('mouseleave.unitPlacing', handlerUnitPlacingMouseleaveBattlefield);
+                _layerMap.on('click.unitPlacing', handlerUnitPlacingClickBattlefield);
             }
         } else {
             _unitToAdd.destroy();
@@ -217,12 +217,42 @@ function Map(settings) {
             _layerMap.draw();
             _layerMap.off('.unitPlacing');
         }
-    });
-    
-    buildBackground(_layerMap);
-    buildOverlay(_layerMap);
+    }
 
+    // Privileged methods
+    this.getSettings = function() {
+        return settings;
+    };
+    this.getStage = function() {
+        return _stage;
+    };
+    this.getMap = function() {
+        return _layerMap;
+    };
+    this.getCellDimensions= function() {
+        return _cellDimensions;
+    };
+
+    // Constructor
+    settings.navigationGradientEnabled = false;
+    
+    var _navigationGradient = new Kinetic.Circle({
+        fillRadialGradientStartRadius: 0,
+        fillRadialGradientStartPoint: [0, 0],
+        fillRadialGradientEndPoint: [0, 0],
+        fillRadialGradientColorStops: [0.6, 'black', 1, 'transparent'],
+        fillRadialGradientEndRadius: 1
+    });
+
+    _layerMap.on('mousemove.navigationGradient', handlerNavigationGradientMousemoveBattlefield);
+    _layerMap.on('mouseenter.navigationGradient', handlerNavigationGradientMouseenterBattlefield);
+    _layerMap.on('mouseleave.navigationGradient', handlerNavigationGradientMouseleaveBattlefield);
+    
+    $(document).bind('unitChange.app', handlerAppUnitChange);
+
+    _layerMap
+        .add(buildBackground())
+        .add(_navigationGradient);
     _stage.add(_layerMap);
-    _stage.add(_layerOverlay);
 }
 Map.prototype = {};
